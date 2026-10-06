@@ -10,6 +10,9 @@ Otwórz `index.html` w przeglądarce lub wrzuć cały folder na dowolny hosting 
 - **Zdjęcia realizacji** — kafelki w sekcji `#galeria` mają obecnie ilustracje zastępcze. Wstaw w `<figure class="tile">` element `<img src="..." alt="...">` i usuń atrybut `data-art`.
 - **Formularz** — bez backendu otwiera program pocztowy z gotową wiadomością. Do wysyłki bezpośredniej podepnij np. Formspree lub Netlify Forms.
 
+## Logo
+`assets/img/` — logo z przezroczystym tłem (`logo.webp`, `logo.png`) oraz ikony karty (`favicon.png`, `apple-touch-icon.png`).
+
 ## Struktura
 - `index.html` — treść: hero, oferta, realizacje, proces, konfigurator wymiarów, o nas, FAQ, kontakt
 - `assets/css/styles.css` — style (paleta: orzech, złoto, turkus żywicy)
