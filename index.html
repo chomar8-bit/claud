@@ -376,9 +376,9 @@
           <!-- UZUPEŁNIJ: prawdziwe dane kontaktowe -->
           <ul class="contact-list">
             <li><span>Telefon</span><a href="tel:+48000000000">+48 000 000 000</a></li>
-            <li><span>E-mail</span><a href="mailto:kontakt@bossgoldenstudio.pl">kontakt@bossgoldenstudio.pl</a></li>
+            <li><span>E-mail</span><a href="mailto:boss.golden.studio@gmail.com">boss.golden.studio@gmail.com</a></li>
             <li><span>Pracownia</span>ul. Przykładowa 1, 00-000 Miasto <em>(wizyty po umówieniu)</em></li>
-            <li><span>Social</span><a href="#" rel="noopener">Instagram</a> · <a href="#" rel="noopener">Facebook</a></li>
+            <li><span>Social</span><a href="https://www.instagram.com/boss.golden.studio" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.facebook.com/BossGoldenStudio" target="_blank" rel="noopener">Facebook</a></li>
           </ul>
         </div>
 
@@ -419,6 +419,8 @@
             <input type="checkbox" name="consent" required>
             <span>Wyrażam zgodę na kontakt w sprawie mojego zapytania.*</span>
           </label>
+          <!-- pułapka na boty: pole niewidoczne dla ludzi -->
+          <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <button type="submit" class="btn btn-block">Wyślij zapytanie</button>
           <p class="form-note" id="formNote" role="status"></p>
         </form>

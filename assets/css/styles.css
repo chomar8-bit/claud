@@ -327,3 +327,7 @@ blockquote { margin: 0; font: italic 500 clamp(1.5rem, 2.6vw, 2.1rem)/1.3 var(--
   .contact-list li { grid-template-columns: 1fr; gap: .2rem; }
   .footer-grid { flex-direction: column; align-items: flex-start; }
 }
+
+/* pułapka na boty w formularzu */
+.hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
+.btn[disabled] { opacity: .6; cursor: progress; transform: none; }

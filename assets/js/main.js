@@ -264,11 +264,19 @@
   });
 
   /* ---------- Formularz kontaktowy ----------
-     Brak backendu: formularz otwiera program pocztowy z gotową wiadomością.
-     Aby wysyłać bezpośrednio, podepnij np. Formspree / Netlify Forms (atrybut action). */
-  const STUDIO_EMAIL = "kontakt@bossgoldenstudio.pl";
+     Wysyłka przez FormSubmit (https://formsubmit.co) — bez własnego serwera.
+     Przy pierwszym zgłoszeniu FormSubmit wysyła na STUDIO_EMAIL link aktywacyjny,
+     który trzeba kliknąć raz. Gdy usługa jest niedostępna, otwieramy program pocztowy. */
+  const STUDIO_EMAIL = "boss.golden.studio@gmail.com";
+  const FORM_ENDPOINT = `https://formsubmit.co/ajax/${STUDIO_EMAIL}`;
   const note = $("#formNote");
-  contact.addEventListener("submit", (e) => {
+  const submitBtn = $('button[type="submit"]', contact);
+  const setNote = (cls, text) => {
+    note.className = "form-note " + cls;
+    note.textContent = text;
+  };
+
+  contact.addEventListener("submit", async (e) => {
     e.preventDefault();
     let ok = true;
     ["name", "contact", "message"].forEach((f) => {
@@ -279,23 +287,47 @@
     });
     if (!contact.consent.checked) ok = false;
     if (!ok) {
-      note.className = "form-note err";
-      note.textContent = "Uzupełnij wymagane pola (*) i zaznacz zgodę na kontakt.";
+      setNote("err", "Uzupełnij wymagane pola (*) i zaznacz zgodę na kontakt.");
       return;
     }
-    const body = [
-      `Imię i nazwisko: ${contact.name.value}`,
-      `Kontakt: ${contact.contact.value}`,
-      `Rodzaj mebla: ${contact.product.value}`,
-      `Kwiaty: ${contact.flowers.value}`,
-      `Wymiary: ${contact.dims.value || "do ustalenia"}`,
-      "",
-      contact.message.value,
-    ].join("\n");
+    // bot wypełnił ukryte pole — udajemy sukces, nic nie wysyłamy
+    if (contact._honey.value) {
+      setNote("ok", "Dziękujemy! Wiadomość została wysłana.");
+      contact.reset();
+      return;
+    }
+
     const subject = `Zapytanie o wycenę — ${contact.product.value}`;
-    window.location.href = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    note.className = "form-note ok";
-    note.textContent = "Dziękujemy! Otwieramy Twój program pocztowy z gotową wiadomością.";
+    const fields = {
+      "Imię i nazwisko": contact.name.value.trim(),
+      "Kontakt": contact.contact.value.trim(),
+      "Rodzaj mebla": contact.product.value,
+      "Kwiaty": contact.flowers.value,
+      "Wymiary": contact.dims.value.trim() || "do ustalenia",
+      "Wiadomość": contact.message.value.trim(),
+    };
+    const payload = { ...fields, _subject: subject, _template: "table", _captcha: "false" };
+    if (/^\S+@\S+\.\S+$/.test(fields["Kontakt"])) payload._replyto = fields["Kontakt"];
+
+    submitBtn.disabled = true;
+    setNote("", "Wysyłanie…");
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || String(data.success) !== "true") throw new Error(data.message || res.status);
+      setNote("ok", "Dziękujemy! Wiadomość została wysłana — odezwiemy się zwykle w ciągu 24 godzin.");
+      contact.reset();
+    } catch (err) {
+      const body = Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join("\n");
+      setNote("err", "Nie udało się wysłać formularza. Otwieramy Twój program pocztowy z gotową wiadomością.");
+      window.location.href = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    } finally {
+      submitBtn.disabled = false;
+    }
   });
 
   $("#year").textContent = new Date().getFullYear();
